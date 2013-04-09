@@ -25,7 +25,12 @@ module Validations
 
 
   # Actual implementation
+  #
   class Validator
+
+    def self.parse_block(&block)
+      # execute block, return array of validation methods called
+    end
 
     def initialize(block)
       @block = block
@@ -34,6 +39,15 @@ module Validations
     def validates?(context)
       true
     end
+  end
+
+  class Context
+
+    def initialize(context)
+      @context = context
+    end
+
+    # def a method for each validation
   end
 
 end
