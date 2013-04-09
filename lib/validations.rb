@@ -9,7 +9,7 @@ module Validations
     #
     def validations(&block)
       return @validations unless block
-      @validations = ValidationsImpl.new(block)
+      @validations = Validator.new(block)
     end
   end
 
@@ -25,7 +25,7 @@ module Validations
 
 
   # Actual implementation
-  class ValidationsImpl
+  class Validator
 
     def initialize(block)
       @block = block
