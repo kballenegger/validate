@@ -11,8 +11,9 @@ module Validations
     # This method is also the main interface to this lib.
     #
     def validations(&block)
-      return @validations unless block
-      @validations = Validator.new(&block)
+      return @validator unless block
+      validations = BlockParsingContext.parse(&block)
+      @validator = Validator.new(validations)
     end
   end
 

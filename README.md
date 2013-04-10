@@ -1,6 +1,7 @@
 # Validations
 
-TODO: Write a gem description
+Validations is a validations library that can validate *any* object that can be
+converted to a hash using `to_hash`.
 
 ## Installation
 

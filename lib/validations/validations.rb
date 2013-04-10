@@ -3,14 +3,14 @@ module Validations
 
   # Every validation method has four arguments:
   #
-  #   obj:          the object to validate
+  #   obj:          the `to_hash` of the object to validate
   #   field:        the field to validate
   #   opts:         the options for the validation
-  #   validations:  any children validations
+  #   validations:  a Validator object that can be used for children
   #
   module ValidationMethods
 
-    def validates_presence_of(obj, field, opts, validations)
+    def self.validates_presence_of(obj, field, opts, validations)
       obj.include?(field)
     end
   end
