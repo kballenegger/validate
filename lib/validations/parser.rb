@@ -17,6 +17,13 @@ module Validations
   #
   class BlockParsingContext
 
+    def self.parse(&block)
+      # execute block, return array of validation methods called
+      context = BlockParsingContext.new
+      context.instance_eval(&block)
+      context.validations
+    end
+
     def initialize
       @validations = []
     end
@@ -27,9 +34,7 @@ module Validations
       raise "Undefined validation #{method}..." unless ValidationMethods.instance_methods(false).include?(method)
       opts = args.pop if args.last.is_a?(::Hash)
       children = if block
-        context = BlockParsingContext.new
-        context.instance_eval(&block)
-        context.validations
+        BlockParsingContext.parse(&block)
       end
       @validations << {
         name: method,

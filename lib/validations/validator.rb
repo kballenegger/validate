@@ -5,15 +5,8 @@ module Validations
   #
   class Validator
 
-    def self.parse_block(&block)
-      # execute block, return array of validation methods called
-      context = BlockParsingContext.new
-      context.instance_eval(&block)
-      context.validations
-    end
-
     def initialize(&block)
-      @validations = self.class.parse_block(&block)
+      @validations = BlockParsingContext.parse(&block)
     end
 
     def validates?(context)
