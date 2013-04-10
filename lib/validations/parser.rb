@@ -20,7 +20,7 @@ module Validations
     def self.parse(&block)
       # execute block, return array of validation methods called
       context = BlockParsingContext.new
-      context.instance_eval(&block)
+      context.instance_exec(&block)
       context.validations
     end
 

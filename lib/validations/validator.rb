@@ -14,7 +14,7 @@ module Validations
         .select do |v|
           # `:when` is a special case, this gets processed right away and
           # filtered out...
-          !(v[:opts] || {})[:when].is_a?(Proc) || context.instance_eval(&v[:opts][:when])
+          !(v[:opts] || {})[:when].is_a?(Proc) || context.instance_exec(&v[:opts][:when])
         end
         .map do |v|
           # destructure fields
