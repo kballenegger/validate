@@ -40,13 +40,44 @@ module Validations
     end
 
     def validates?(context)
-      p @validations
+      @validations.select do |v|
+        # `:when` is a special case, this gets processed right away and
+        # filtered out...
+        !(v[:opts] || {})[:when].is_a?(Proc) || context.instance_eval(&v[:opts][:when])
+      end.map do |v|
+        # destructure fields
+        v[:fields].map {|f| v.merge(fields: f) }
+      end.flatten(1).map do |v|
+        # lastly, execute validation
+        method = ValidationMethods.instance_method(v[:name])
+        args = [v[:fields]]
+        if v[:opts]
+          opts = v[:opts].dup
+          opts.delete(:when) # when doesn't belong in arguments
+          args << opts if opts.count > 0
+        end
+
+      end.reduce {|a,b| a && b }
     end
   end
 
   private
 
-  class BlockParsingContext < BasicObject
+  # The rules for parsing validations are such:
+  #
+  # - Validations are method calls (starting with the string `validates_`)
+  # - followed by field names as regular arguments (as symbols)
+  # - any options are included in an options hash, eg. is: String
+  # - and native blocks are reserved for children-validations
+  #
+  # For example:
+  #
+  #   validates_subhash :iap1, :iap2, when: -> { type == :iap } do
+  #     validates_type_of :id,   is: String
+  #     validates_type_of :tier, is: Numeric
+  #   end
+  #
+  class BlockParsingContext
 
     def initialize
       @validations = []
@@ -55,30 +86,27 @@ module Validations
     attr_reader :validations
 
     def method_missing(method, *args, &block)
-      raise "Undefined validation #{method}..." unless ValidationContext.method_defined?(method)
+      raise "Undefined validation #{method}..." unless ValidationMethods.instance_methods(false).include?(method)
       opts = args.pop if args.last.is_a?(::Hash)
+      children = if block
+        context = BlockParsingContext.new
+        context.instance_eval(&block)
+        context.validations
+      end
       @validations << {
         name: method,
-        args: args,
+        fields: args,
         opts: opts,
-        block: block
+        validations: children
       }
     end
   end
 
-  class ValidationContext < BasicObject
 
-    def initialize(context)
-      @context = context
-    end
-    
-    def context_eval(&block)
-      @context.instance_eval(&block)
-    end
+  module ValidationMethods
 
-    # def a method for each validation
-    def validates_presence_of(key)
-      @context.include?(key)
+    def validates_presence_of(obj, field, opts)
+      obj.include?(field)
     end
   end
 
