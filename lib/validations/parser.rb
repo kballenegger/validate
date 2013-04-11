@@ -44,6 +44,22 @@ module Validations
         validations: children
       }
     end
+
+    # `when` is a special case, its syntax is as follows:
+    #
+    #   when -> { ... } do
+    #     # validations go here
+    #   end
+    #
+    def run_when(condition, &block)
+      validations = BlockParsingContext.parse(&block)
+      validations.map do |v|
+        v[:opts] ||= {}
+        v[:opts][:when] = condition
+        v
+      end
+      @validations += validations
+    end
   end
 end
 

@@ -70,12 +70,50 @@ describe Validations do
       end
     end
 
-    it 'validates' do
+    it 'validates when when does not match' do
       test = TestClass.new(something: false)
       test.validates?.should == true
     end
     
+    it 'validates when when does match' do
+      test = TestClass.new(something: true, name: 'me')
+      test.validates?.should == true
+    end
+    
     it 'fails' do
+      test = TestClass.new(something: true)
+      test.validates?.should == false
+    end
+  end
+
+  context 'run_when block' do
+    before do
+      class TestClass < BaseTestClass
+        validations do
+          run_when -> { @hash[:something] == true } do
+            validates_presence_of :name
+            validates_numericality_of :amount
+          end
+        end
+      end
+    end
+
+    it 'validates when when does not match' do
+      test = TestClass.new(something: false)
+      test.validates?.should == true
+    end
+
+    it 'validates when when does match' do
+      test = TestClass.new(something: true, name: 'me', amount: 1.3)
+      test.validates?.should == true
+    end
+
+    it 'fails when one validations fail' do
+      test = TestClass.new(something: true, name: 'me')
+      test.validates?.should == false
+    end
+
+    it 'fails when all validations fail' do
       test = TestClass.new(something: true)
       test.validates?.should == false
     end
