@@ -31,7 +31,7 @@ module Validations
     attr_reader :validations
 
     def method_missing(method, *args, &block)
-      raise NoMethodError.new("No method #{method} to call in the context of a validation block.") unless method.to_s =~ /^validates_/
+      raise NoMethodError.new("No method #{method} to call in the context of a validation block.") unless method.to_s =~ /^validates/
       raise NoMethodError.new("Undefined validation method: #{method}...") unless ValidationMethods.respond_to?(method)
       opts = args.pop if args.last.is_a?(::Hash)
       children = if block
