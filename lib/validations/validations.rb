@@ -17,7 +17,7 @@ module Validations
     #   validates :type, with: -> { is_a?(String) && self =~ /^a/ }
     #
     def self.validates(obj, field, opts, validator)
-      true == obj[field].instance_exec(opts[:with])
+      true == obj[field].instance_exec(&opts[:with])
     end
 
     # Validates that a field exists.
