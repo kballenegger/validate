@@ -40,6 +40,27 @@ describe Validations do
 
   end
 
+  context 'multiple fields' do
+
+    before do
+      class TestClass < BaseTestClass
+        validations do
+          validates_presence_of :field1, :field2
+        end
+      end
+    end
+
+    it 'validate' do
+      test = TestClass.new(field1: true, field2: true)
+      test.validates?.should == true
+    end
+    
+    it 'fail' do
+      test = TestClass.new(field1: true)
+      test.validates?.should == false
+    end
+  end
+
   context 'validates_presence_of' do
     
     before do
