@@ -75,6 +75,24 @@ module Validations
       validator.validates?(hash)
     end
 
+    # Validates each element in an Array with a set of validations.
+    #
+    # *Note:* the children validations should look at the field `:self` to
+    # contain the value to be validated. ie. it validates {self: element}
+    #
+    #   # ensures :elements is an array of strings
+    #   validates_array :elements do
+    #     validates_type_of :self, is: String
+    #   end
+    #
+    def self.validates_array(obj, field, opts, validator)
+      return false unless obj[field].respond_to?(:to_a)
+      array = obj[field].to_a
+      array.map do |e|
+        validator.validates?({self: e})
+      end.reduce {|a,b| a && b }
+    end
+
   end
 
 end

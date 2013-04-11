@@ -221,6 +221,39 @@ describe Validations do
     end
   end
 
+
+  context 'validates_array' do
+
+    before do
+      class TestClass < BaseTestClass
+        validations do
+          validates_array :field do
+            validates_type_of :self, is: String
+          end
+        end
+      end
+    end
+
+    it 'validates' do
+      test = TestClass.new(field: %w(one two three))
+      test.validates?.should == true
+    end
+    
+    it 'fails when not a hash' do
+      test = TestClass.new(field: 'not an array')
+      test.validates?.should == false
+    end
+
+    it 'fails when all validations fail' do
+      test = TestClass.new(field: [1, 2, 3])
+      test.validates?.should == false
+    end
+
+    it 'fails when only one validation fails' do
+      test = TestClass.new(field: ['one', 'two', 3])
+      test.validates?.should == false
+    end
+  end
 end
 
 
