@@ -1,5 +1,5 @@
 
-module Validations
+module Validate
 
   # The rules for parsing validations are such:
   #

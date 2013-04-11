@@ -1,10 +1,10 @@
-require 'validations/version'
-require 'validations/validations'
-require 'validations/parser'
-require 'validations/validator'
+require 'validate/version'
+require 'validate/validations'
+require 'validate/parser'
+require 'validate/validator'
 
 
-module Validations
+module Validate
 
   module ClassMethods
     # Doubles as setter & getter for @validations

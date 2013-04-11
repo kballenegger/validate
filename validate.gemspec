@@ -1,11 +1,11 @@
 # -*- encoding: utf-8 -*-
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'validations/version'
+require 'validate/version'
 
 Gem::Specification.new do |gem|
-  gem.name          = 'validations'
-  gem.version       = Validations::VERSION
+  gem.name          = 'validate'
+  gem.version       = Validate::VERSION
   gem.authors       = ['Kenneth Ballenegger']
   gem.email         = ['kenneth@ballenegger.com']
   gem.description   = %q{Validations is a library for validating data structures.}

@@ -2,7 +2,7 @@
 require 'rspec'
 
 $: << File.dirname(__FILE__) + '/../lib'
-require 'validations'
+require 'validate'
 
 
 
@@ -13,10 +13,10 @@ class BaseTestClass
   def to_hash
     @hash
   end
-  include Validations
+  include Validate
 end
 
-describe Validations do
+describe Validate do
 
   context 'simple test' do
 

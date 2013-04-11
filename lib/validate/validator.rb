@@ -1,5 +1,5 @@
 
-module Validations
+module Validate
 
   # Actual implementation
   #

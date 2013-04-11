@@ -1,5 +1,5 @@
 
-module Validations
+module Validate
 
   # Every validation method has four arguments:
   #
