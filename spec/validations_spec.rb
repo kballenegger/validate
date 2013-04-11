@@ -408,6 +408,37 @@ describe Validations do
       test = TestClass.new(hash)
       test.validates?.should == false
     end
+
+    it 'fails when number_or_symbols contains invalid numbers' do
+      hash = @valid_hash.dup
+      hash[:number_or_symbols] = [0, -1, 'awesome']
+      test = TestClass.new(hash)
+      test.validates?.should == false
+    end
+
+    it 'fails when number_or_symbols contains invalid symbols' do
+      hash = @valid_hash.dup
+      hash[:number_or_symbols] = ['sick', 'awesome', 3, 'awful']
+      test = TestClass.new(hash)
+      test.validates?.should == false
+    end
+
+    it 'fails when secret does not exist' do
+      hash = @valid_hash.dup
+      hash.delete(:secret)
+      test = TestClass.new(hash)
+      test.validates?.should == false
+    end
+
+    it 'fails when number_or_symbols contains invalid numbers' do
+      hash = @valid_hash.dup
+      hash[:iap] = {
+        id: 1,
+        bundle: 'hello'
+      }
+      test = TestClass.new(hash)
+      test.validates?.should == false
+    end
   end
 end
 
