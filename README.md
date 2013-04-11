@@ -64,7 +64,7 @@ module Store
       end
       
       # also, validates subdocuments
-      validates_subdocument :iap, when: -> { type == :iap } do
+      validates_child_hash :iap, when: -> { type == :iap } do
         # the validation is now scoped to the subdocument,
         # ie. we're validating the sub-doc
         validates_type_of :id,      is: BSON::ObjectId
