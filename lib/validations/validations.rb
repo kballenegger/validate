@@ -93,6 +93,15 @@ module Validations
       end.reduce {|a,b| a && b }
     end
 
+    # Validates a field against a regular expression.
+    #
+    #  validates_regex :field, matches: /^hello/
+    #
+    def self.validates_regex(obj, field, opts, validator)
+      return false unless obj[field].respond_to?(:=~)
+      0 == (obj[field] =~ opts[:matches])
+    end
+
   end
 
 end

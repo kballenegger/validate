@@ -245,6 +245,27 @@ describe Validations do
     end
   end
 
+  context 'validates_regex' do
+
+    before do
+      class TestClass < BaseTestClass
+        validations do
+          validates_regex :field, matches: /^hello/
+        end
+      end
+    end
+
+    it 'validates' do
+      test = TestClass.new(field: 'hello world')
+      test.validates?.should == true
+    end
+    
+    it 'fails' do
+      test = TestClass.new(field: 'bye world')
+      test.validates?.should == false
+    end
+  end
+
   context 'validates_child_hash' do
 
     before do
