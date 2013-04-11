@@ -187,6 +187,40 @@ describe Validations do
     end
   end
 
+  context 'validates_child_hash' do
+
+    before do
+      class TestClass < BaseTestClass
+        validations do
+          validates_child_hash :field do
+            validates_value_of :type, is: 'price'
+            validates_numericality_of :amount
+          end
+        end
+      end
+    end
+
+    it 'validates' do
+      test = TestClass.new(field: {type: 'price', amount: 1.3})
+      test.validates?.should == true
+    end
+    
+    it 'fails when not a hash' do
+      test = TestClass.new(field: nil)
+      test.validates?.should == false
+    end
+
+    it 'fails when all validations fail' do
+      test = TestClass.new(field: {random: :stuff})
+      test.validates?.should == false
+    end
+
+    it 'fails when only one validation fails' do
+      test = TestClass.new(field: {type: :random, amount: 20})
+      test.validates?.should == false
+    end
+  end
+
 end
 
 

@@ -3,10 +3,10 @@ module Validations
 
   # Every validation method has four arguments:
   #
-  #   obj:          the `to_hash` of the object to validate
-  #   field:        the field to validate
-  #   opts:         the options for the validation
-  #   validations:  a Validator object that can be used for children
+  #   obj:        the `to_hash` of the object to validate
+  #   field:      the field to validate
+  #   opts:       the options for the validation
+  #   validator:  a Validator object that can be used for children
   #
   module ValidationMethods
 
@@ -16,7 +16,7 @@ module Validations
     #
     #   validates :type, with: -> { is_a?(String) && self =~ /^a/ }
     #
-    def self.validates(obj, field, opts, validations)
+    def self.validates(obj, field, opts, validator)
       true == obj[field].instance_exec(opts[:with])
     end
 
@@ -26,7 +26,7 @@ module Validations
     #
     #   validates_presence_of :field
     #
-    def self.validates_presence_of(obj, field, opts, validations)
+    def self.validates_presence_of(obj, field, opts, validator)
       obj.include?(field)
     end
 
@@ -34,7 +34,7 @@ module Validations
     #
     #   validates_type_of :name, is: String
     #
-    def self.validates_type_of(obj, field, opts, validations)
+    def self.validates_type_of(obj, field, opts, validator)
       obj.include?(field) && obj[field].is_a?(opts[:is])
     end
 
@@ -42,7 +42,7 @@ module Validations
     #
     #   validates_inclusion_of :type, in: %w(paid free)
     #
-    def self.validates_inclusion_of(obj, field, opts, validations)
+    def self.validates_inclusion_of(obj, field, opts, validator)
       opts[:in].include?(obj[field])
     end
 
@@ -50,7 +50,7 @@ module Validations
     #
     #   validates_numericality_of :amount
     #
-    def self.validates_numericality_of(obj, field, opts, validations)
+    def self.validates_numericality_of(obj, field, opts, validator)
       obj[field].is_a?(Numeric)
     end
 
@@ -58,8 +58,21 @@ module Validations
     #
     #   validates_value_of :field, is: 'something'
     #
-    def self.validates_value_of(obj, field, opts, validations)
+    def self.validates_value_of(obj, field, opts, validator)
       obj.include?(field) && obj[field] == opts[:is]
+    end
+
+    # Validates a Hash field with its own set of validations.
+    #
+    #   validates_child_hash :hash do
+    #     validates_value_of :type, is: 'price'
+    #     validates_numericality_of :amount
+    #   end
+    #
+    def self.validates_child_hash(obj, field, opts, validator)
+      return false unless obj[field].respond_to?(:to_hash)
+      hash = obj[field].to_hash
+      validator.validates?(hash)
     end
 
   end
