@@ -19,7 +19,7 @@ Or install it yourself as:
 
 ## Usage
 
-This is what a validation look like, with this library:
+This is what a validation looks like, with this library:
 
 ```ruby
 # Here, we have a custom DSL for expressing validations. We put the
