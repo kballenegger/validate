@@ -48,7 +48,7 @@ module Store
       validates_type_of :description, :long_description, is: String
       
       # or the key could be validated with a block
-      validates :type {|t| ['currency', 'iap'].include?(t) }
+      validates :type, with: -> { ['currency', 'iap'].include?(self) }
       
       # or we could build a validation for enums
       validates_inclusion_of :reward_type, in: %w(currency consumable permanent)
@@ -83,7 +83,7 @@ module Store
       # validations inside the block
       validates_array :logic do
         validates_inclusion_of :type, in: [:one, :two]
-        validates_type_of :one, is: String, when -> { type == :one }
+        validates_type_of :one, is: String, when: -> { type == :one }
       end
     end
   end
