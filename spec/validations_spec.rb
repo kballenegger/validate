@@ -103,6 +103,26 @@ describe Validations do
     end
   end
 
+  context 'validates_inclusion_of' do
+
+    before do
+      class TestClass < BaseTestClass
+        validations do
+          validates_inclusion_of :field, in: %w(one two three)
+        end
+      end
+    end
+
+    it 'validates' do
+      test = TestClass.new(field: 'two')
+      test.validates?.should == true
+    end
+    
+    it 'fails' do
+      test = TestClass.new(field: {test: nil})
+      test.validates?.should == false
+    end
+  end
 
 end
 

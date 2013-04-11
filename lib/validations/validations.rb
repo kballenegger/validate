@@ -38,6 +38,14 @@ module Validations
       obj.include?(field) && obj[field].is_a?(opts[:is])
     end
 
+    # Validates that the value of the field appears in an array.
+    #
+    #   validates_inclusion_of :type, in: %w(paid free)
+    #
+    def self.validates_inclusion_of(obj, field, opts, validations)
+      opts[:in].include?(obj[field])
+    end
+
   end
 
 end
