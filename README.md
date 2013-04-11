@@ -58,7 +58,7 @@ module Store
       validates_type_of :currency, is: String, when: -> { type == :currency }
       
       # or alternatively `when` as a block
-      when -> { type == :currency } do
+      run_when -> { type == :currency } do
         validates_numericality_of :amount
         validates_type_of :currency, is: String
       end
