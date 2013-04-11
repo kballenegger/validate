@@ -61,6 +61,26 @@ describe Validations do
     end
   end
 
+  context 'when option' do
+    before do
+      class TestClass < BaseTestClass
+        validations do
+          validates_presence_of :name, when: -> { @hash[:something] == true }
+        end
+      end
+    end
+
+    it 'validates' do
+      test = TestClass.new(something: false)
+      test.validates?.should == true
+    end
+    
+    it 'fails' do
+      test = TestClass.new(something: true)
+      test.validates?.should == false
+    end
+  end
+
   context 'validates_presence_of' do
     
     before do
