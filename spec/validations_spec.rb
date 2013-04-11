@@ -145,6 +145,27 @@ describe Validations do
     end
   end
 
+  context 'validates_numericality_of' do
+
+    before do
+      class TestClass < BaseTestClass
+        validations do
+          validates_numericality_of :field
+        end
+      end
+    end
+
+    it 'validates' do
+      test = TestClass.new(field: 1.3)
+      test.validates?.should == true
+    end
+    
+    it 'fails' do
+      test = TestClass.new(field: {test: nil})
+      test.validates?.should == false
+    end
+  end
+
 end
 
 

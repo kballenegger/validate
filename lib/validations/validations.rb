@@ -46,6 +46,14 @@ module Validations
       opts[:in].include?(obj[field])
     end
 
+    # Validates that a field's value is numeric.
+    #
+    #   validates_numericality_of :amount
+    #
+    def self.validates_numericality_of(obj, field, opts, validations)
+      obj[field].is_a?(Numeric)
+    end
+
   end
 
 end
