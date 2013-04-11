@@ -10,7 +10,7 @@ module Validations
     end
 
     def validates?(context)
-      @validations
+      bool = @validations
         .select do |v|
           # `:when` is a special case, this gets processed right away and
           # filtered out...
@@ -29,6 +29,7 @@ module Validations
         end
         .reduce {|a,b| a && b }
         # return the result as a boolean
+      bool.nil? ? true : bool
     end
   end
 
