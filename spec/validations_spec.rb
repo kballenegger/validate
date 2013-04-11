@@ -333,6 +333,82 @@ describe Validations do
       test.validates?.should == false
     end
   end
+
+
+  context 'complex example' do
+
+    before do
+
+      class TestClass < BaseTestClass
+
+        validations do
+          validates_type_of :id, is: Integer
+          validates_type_of :name, :description, is: String
+
+          validates_presence_of :secret
+
+          validates_inclusion_of :type, in: %w(paid free)
+
+          # validate a block in the data structure that must evaluate to true
+          validates :block, with: -> { self.call == true }
+
+          # number_or_symbols is an array that contains either numerics or
+          # symbols... only when it is set
+          validates_array :number_or_symbols, when: -> { @hash.include?(:number_or_symbols) } do
+
+            validates :self, with: -> { self.is_a?(String) || self.is_a?(Numeric) }
+
+            # when it is numeric, it must be greater than 0
+            validates :self,
+              when: -> { self[:self].is_a?(Numeric) },
+              with: -> { self > 0 }
+
+            # when it is a symbol, it start with `a` and is > 2 chars
+            run_when -> { self[:self].is_a?(String) } do
+              validates_regex :self, matches: /^a/
+              validates_regex :self, matches: /..+/
+            end
+          end
+
+          validates_child_hash :iap do
+            validates_type_of :id, is: Numeric
+            validates_type_of :bundle, is: String
+            validates_regex :bundle, matches: /(\w+\.){2}\w+/
+          end
+          validates :iap, with: -> { self.keys.count == 2 }
+        end
+      end
+
+      @valid_hash = {
+        id: 1,
+        name: 'item',
+        description: 'string',
+        secret: :anything,
+        type: 'paid',
+        block: -> { true },
+        number_or_symbols: [
+          1, 2, 3,
+          'awesome', 'awful'
+        ],
+        iap: {
+          id: 1,
+          bundle: 'com.chartboost.awesome'
+        }
+      }
+    end
+
+    it 'validates' do
+      test = TestClass.new(@valid_hash)
+      test.validates?.should == true
+    end
+
+    it 'fails when block is changed' do
+      hash = @valid_hash.dup
+      hash[:block] = -> { false }
+      test = TestClass.new(hash)
+      test.validates?.should == false
+    end
+  end
 end
 
 
