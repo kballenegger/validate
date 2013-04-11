@@ -54,6 +54,14 @@ module Validations
       obj[field].is_a?(Numeric)
     end
 
+    # Validates the value, ensure equality.
+    #
+    #   validates_value_of :field, is: 'something'
+    #
+    def self.validates_value_of(obj, field, opts, validations)
+      obj.include?(field) && obj[field] == opts[:is]
+    end
+
   end
 
 end

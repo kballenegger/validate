@@ -166,6 +166,27 @@ describe Validations do
     end
   end
 
+  context 'validates_value_of' do
+
+    before do
+      class TestClass < BaseTestClass
+        validations do
+          validates_value_of :field, is: :something
+        end
+      end
+    end
+
+    it 'validates' do
+      test = TestClass.new(field: :something)
+      test.validates?.should == true
+    end
+    
+    it 'fails' do
+      test = TestClass.new(field: :something_else)
+      test.validates?.should == false
+    end
+  end
+
 end
 
 
