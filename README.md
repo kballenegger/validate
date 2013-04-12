@@ -1,13 +1,13 @@
-# Validations
+# Validate
 
-Validations is a validations library that can validate *any* object that can be
+Validate is a validations library that can validate *any* object that can be
 converted to a hash using `to_hash`.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'validations'
+    gem 'validate'
 
 And then execute:
 
@@ -15,7 +15,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install validations
+    $ gem install validate
 
 ## Usage
 
@@ -35,7 +35,7 @@ module Store
     
     # Order matters, first include library. Also: validations are
     # executed and checked in the order in which they are defined.
-    include Validations
+    include Validate
     
     # Validations are contained within a block, so as to not pollute
     # the class namespace with a DSL's implementation.

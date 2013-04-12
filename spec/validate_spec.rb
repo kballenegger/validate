@@ -86,6 +86,31 @@ describe Validate do
     end
   end
 
+  context 'when option' do
+    before do
+      class TestClass < BaseTestClass
+        validations do
+          validates_type_of :name, is: Symbol, when: :is_set
+        end
+      end
+    end
+
+    it 'validates when when does not match' do
+      test = TestClass.new(something: false)
+      test.validates?.should == true
+    end
+    
+    it 'validates when when does match' do
+      test = TestClass.new(name: :sym)
+      test.validates?.should == true
+    end
+    
+    it 'fails' do
+      test = TestClass.new(name: 'me')
+      test.validates?.should == false
+    end
+  end
+
   context 'run_when block' do
     before do
       class TestClass < BaseTestClass

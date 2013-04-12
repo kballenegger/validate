@@ -11,15 +11,18 @@ module Validate
 
     def validates?(context)
       bool = @validations
-        .select do |v|
-          # `:when` is a special case, this gets processed right away and
-          # filtered out...
-          !(v[:opts] || {})[:when].is_a?(Proc) || context.instance_exec(&v[:opts][:when])
-        end
         .map do |v|
           # destructure fields
           v[:fields].map {|f| v.merge(fields: f) }
         end.flatten(1)
+        .select do |v|
+          # `:when` is a special case, this gets processed right away and
+          # filtered out...
+          when_opt = (v[:opts] || {})[:when]
+          # :is_set is short for checking if then field is set
+          when_opt = -> { self.to_hash.include?(v[:fields]) } if when_opt == :is_set
+          !when_opt.is_a?(Proc) || context.instance_exec(&when_opt)
+        end
         .map do |v|
           # lastly, execute validation
           validator = if v[:validations]
