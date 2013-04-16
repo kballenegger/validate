@@ -1,6 +1,7 @@
 
 
 require 'kongo'
+require 'validate'
 
 # This file bridges Kongo and Validate by adding support for a validates?
 # method to Kongo::Collection.
@@ -15,8 +16,25 @@ module Kongo
       hash = hash.dup
       hash['_id'] = BSON::ObjectId.new unless hash.include?('_id')
       model = ::Kongo::Model.new(hash, coll)
-      # NOTE: raises NoMethodError if the model does not have validations
       model.validates?
+    end
+  end
+
+  class Model
+
+    # This is the same as add_extension, but should be used to add validation
+    # extensions, which are implemented differently from regular extensions.
+    #
+    def self.add_validation_extension(collection_name, mod)
+      @@validations = mod.validations
+      ((@@extensions ||= {})[collection_name.to_sym] ||= []) << mod
+    end
+
+    # This method is used by the validations library to fetch the validations
+    # to run. Do not call this directly.
+    #
+    def self.validations
+      @@validations
     end
   end
 end
