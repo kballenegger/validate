@@ -1,5 +1,3 @@
-
-
 require 'kongo'
 
 # This file bridges Kongo and Validate by adding support for a validates?

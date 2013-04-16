@@ -40,6 +40,54 @@ describe Validate do
 
   end
 
+  context 'single failure' do
+
+    before do
+      class TestClass < BaseTestClass
+        validations do
+          validates_presence_of 'name'
+        end
+      end
+    end
+
+    it 'should have no failures before running the test' do
+      test = TestClass.new({"not_name" => :hello})
+      test.failures.should == []
+    end
+
+    it 'should have the correct failure array' do
+      test = TestClass.new({"not_name" => :hello})
+      test.validates?.should == false
+      test.failures.should == [{'name'=>'was not present.'}]
+    end
+
+    it 'should have an empty failure array when test succeeds' do
+      test = TestClass.new({"name" => :hello})
+      test.validates?.should == true
+      test.failures.should == []
+    end
+
+  end
+
+  context 'multiple failures' do
+
+    before do
+      class TestClass < BaseTestClass
+        validations do
+          validates_presence_of 'name', reason: -> { 'MUST BE HERE' } # lambda here helps test two things at once
+          validates_type_of :something, is: String
+        end
+      end
+    end
+
+    it 'should have the correct failure array' do
+      test = TestClass.new({"not_name" => :hello})
+      test.validates?.should == false
+      test.failures.should == [{'name'=>'MUST BE HERE'}, {:something=>'was not of type String.'}]
+    end
+
+  end
+
   context 'multiple fields' do
 
     before do

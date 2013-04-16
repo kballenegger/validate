@@ -24,7 +24,13 @@ module Validate
   # May throw a nil NoMethodError if validations are not defined properly.
   #
   def validates?
-    self.class.validations.validates?(self)
+    @validator = self.class.validations.dup
+    @validator.validates?(self)
+  end
+
+  def failures
+    return [] unless @validator
+    @validator.failures
   end
 
 end

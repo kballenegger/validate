@@ -10,8 +10,7 @@ module Validate
     end
 
     def validates?(context)
-      @failures = []
-      bool = @validations
+      @failures = @validations
         .map do |v|
           # destructure fields
           v[:fields].map {|f| v.merge(fields: f) }
@@ -25,17 +24,27 @@ module Validate
           !when_opt.is_a?(Proc) || context.instance_exec(&when_opt)
         end
         .map do |v|
+          # fetch reasons
+          {reason: (v[:opts] || {})[:reason] || ValidationMethods.reason(v[:name])}.merge(v)
+        end
+        .map do |v|
           # lastly, execute validation
           validator = if v[:validations]
             Validator.new(v[:validations])
           end
-          status = ValidationMethods.send(v[:name], context.to_hash, v[:fields], v[:opts], validator)
-          @failures << v unless status == true
-          status
-        end
-        .reduce {|a,b| a && b }
-        # return the result as a boolean
-      bool.nil? ? true : bool
+          success = ValidationMethods.new.send(v[:name], context.to_hash, v[:fields], v[:opts], validator)
+          unless success
+            reason = v[:reason].is_a?(Proc) ?
+              ValidationMethods::ArgumentFailureBlockScope.new(context.to_hash, v[:fields], v[:opts], validator).instance_exec(&v[:reason]) :
+              v[:reason]
+            {v[:fields] => reason}
+          end
+        end.select {|v| !v.nil? } # discard successes
+      @failures.count == 0
+    end
+
+    def failures
+      @failures || []
     end
   end
 
