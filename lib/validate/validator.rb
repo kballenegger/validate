@@ -10,6 +10,7 @@ module Validate
     end
 
     def validates?(context)
+      @failures = []
       bool = @validations
         .map do |v|
           # destructure fields
@@ -28,7 +29,9 @@ module Validate
           validator = if v[:validations]
             Validator.new(v[:validations])
           end
-          ValidationMethods.send(v[:name], context.to_hash, v[:fields], v[:opts], validator)
+          status = ValidationMethods.send(v[:name], context.to_hash, v[:fields], v[:opts], validator)
+          @failures << v unless status == true
+          status
         end
         .reduce {|a,b| a && b }
         # return the result as a boolean
