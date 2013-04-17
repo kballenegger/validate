@@ -16,6 +16,16 @@ module Kongo
       model = ::Kongo::Model.new(hash, coll)
       model.validates?
     end
+
+    # Returns any failures on `hash` if it were to be inserted.
+    #
+    def validation_failures(hash)
+      hash = hash.dup
+      hash['_id'] = BSON::ObjectId.new unless hash.include?('_id')
+      model = ::Kongo::Model.new(hash, coll)
+      model.validates?
+      model.failures
+    end
   end
 
   class Model
