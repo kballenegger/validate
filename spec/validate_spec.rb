@@ -513,6 +513,37 @@ describe Validate do
       test.validates?.should == false
     end
   end
+
+
+  context Hash do
+
+    before do
+      require 'validate/hash'
+      @compiled_validation = Validate::Parser.parse do
+        validates_presence_of 'name', when: -> { true }
+      end
+    end
+
+    it 'should validate a valid object' do
+      hash = {"name" => :hello}
+      hash.validates?(@compiled_validation).should == true
+      hash.failures.should == []
+    end
+
+    it 'should fail to validate an invalid object' do
+      hash = {"not_name" => :hello}
+      hash.validates?(@compiled_validation).should == false
+      hash.failures.should == [{"name"=>"was not present."}]
+    end
+
+    it 'should validate a valid object, when compiling on the fly' do
+      hash = {"name" => :hello}
+      hash.validates? do
+        validates_presence_of 'name', when: -> { true }
+      end.should == true
+      hash.failures.should == []
+    end
+  end
 end
 
 

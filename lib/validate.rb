@@ -12,7 +12,7 @@ module Validate
     #
     def validations(&block)
       return @validator unless block
-      validations = BlockParsingContext.parse(&block)
+      validations = Parser.parse(&block)
       @validator = Validator.new(validations)
     end
   end

@@ -15,7 +15,7 @@ module Validate
   #     validates_type_of :tier, is: Numeric
   #   end
   #
-  class BlockParsingContext
+  class Parser
 
     def self.parse(&block)
       # execute block, return array of validation methods called
@@ -23,6 +23,10 @@ module Validate
       context.instance_exec(&block)
       context.validations
     end
+  end
+
+
+  class BlockParsingContext
 
     def initialize
       @validations = []
@@ -35,7 +39,7 @@ module Validate
       raise NoMethodError.new("Undefined validation method: #{method}...") unless ValidationMethods.new.respond_to?(method)
       opts = args.pop if args.last.is_a?(::Hash)
       children = if block
-        BlockParsingContext.parse(&block)
+        Parser.parse(&block)
       end
       @validations << {
         name: method,
@@ -52,7 +56,7 @@ module Validate
     #   end
     #
     def run_when(condition, &block)
-      validations = BlockParsingContext.parse(&block)
+      validations = Parser.parse(&block)
       validations.map do |v|
         v[:opts] ||= {}
         v[:opts][:when] = condition
