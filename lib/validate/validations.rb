@@ -76,7 +76,7 @@ module Validate
     #     validates_numericality_of :amount
     #   end
     #
-    fails_because_key { "failed validation with errors:\n#{validador.failures.inspect}." }
+    fails_because_key { "failed validation with errors:\n#{validator.failures.inspect}." }
     def validates_child_hash(obj, field, opts, validator)
       return false unless obj[field].respond_to?(:to_hash)
       hash = obj[field].to_hash
