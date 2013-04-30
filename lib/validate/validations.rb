@@ -46,6 +46,7 @@ module Validate
     #
     #   validates_inclusion_of :type, in: %w(paid free)
     #
+    fails_because_key { "was not of in #{opts[:in].inspect}." }
     def validates_inclusion_of(obj, field, opts, validator)
       opts[:in].include?(obj[field])
     end
@@ -54,6 +55,7 @@ module Validate
     #
     #   validates_numericality_of :amount
     #
+    fails_because_key 'was not Numeric.'
     def validates_numericality_of(obj, field, opts, validator)
       obj[field].is_a?(Numeric)
     end
@@ -62,6 +64,7 @@ module Validate
     #
     #   validates_value_of :field, is: 'something'
     #
+    fails_because_key { "was not of in #{opts[:is].inspect}." }
     def validates_value_of(obj, field, opts, validator)
       obj.include?(field) && obj[field] == opts[:is]
     end
@@ -73,6 +76,7 @@ module Validate
     #     validates_numericality_of :amount
     #   end
     #
+    fails_because_key { "failed validation with errors:\n#{validador.failures.inspect}." }
     def validates_child_hash(obj, field, opts, validator)
       return false unless obj[field].respond_to?(:to_hash)
       hash = obj[field].to_hash
@@ -89,6 +93,7 @@ module Validate
     #     validates_type_of :self, is: String
     #   end
     #
+    fails_because_key 'contained at least one element which failed validation.'
     def validates_array(obj, field, opts, validator)
       return false unless obj[field].respond_to?(:to_a)
       array = obj[field].to_a
@@ -101,6 +106,7 @@ module Validate
     #
     #  validates_regex :field, matches: /^hello/
     #
+    fails_because_key { "did not match regex #{opts[:matches].inspect}." }
     def validates_regex(obj, field, opts, validator)
       return false unless obj[field].respond_to?(:=~)
       0 == (obj[field] =~ opts[:matches])
