@@ -34,16 +34,27 @@ module Kongo
     # extensions, which are implemented differently from regular extensions.
     #
     def self.add_validation_extension(collection_name, mod)
-      @@validations = mod.validations
-      ((@@extensions ||= {})[collection_name.to_sym] ||= []) << mod
+      (@@validations ||= {})[collection_name.to_sym] = mod.validations
     end
 
-    # This method is used by the validations library to fetch the validations
-    # to run. Do not call this directly.
+    # Override initialize to also set @validator.
     #
-    def self.validations
-      @@validations
+    alias :original_initialize :initialize
+    def initialize(*args)
+      ret = original_initialize(*args)
+      @validator = (@@validations ||= {})[@coll.name.to_sym]
+      ret
     end
+
+    # Implements interface to validations via the two usual methods.
+    #
+    def validates?
+      @validator.validates?(self)
+    end
+    def failures
+      @validator.failures
+    end
+
   end
 end
 
