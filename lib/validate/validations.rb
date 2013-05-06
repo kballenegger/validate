@@ -64,7 +64,7 @@ module Validate
     #
     #   validates_value_of :field, is: 'something'
     #
-    fails_because_key { "was not of in #{opts[:is].inspect}." }
+    fails_because_key { "was not #{opts[:is].inspect}." }
     def validates_value_of(obj, field, opts, validator)
       obj.include?(field) && obj[field] == opts[:is]
     end
