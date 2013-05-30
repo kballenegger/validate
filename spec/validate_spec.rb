@@ -544,6 +544,58 @@ describe Validate do
       hash.failures.should == []
     end
   end
-end
 
+
+  context 'when allow_keys' do
+
+    context 'is `:valid`' do
+
+      before do
+        class TestClass < BaseTestClass
+          validations do
+            allow_keys :valid
+            validates_type_of 'one', 'two', when: :is_set, is: Symbol
+          end
+        end
+      end
+
+      it 'should validate an object' do
+        test = TestClass.new({'one' => :hello})
+        test.validates?.should == true
+        p test.failures
+      end
+
+      it 'should not validate an invalid object' do
+        test = TestClass.new({'one' => :hello, 'three' => :hello})
+        test.validates?.should == false
+        test.failures.should == [{'three' => 'is not a valid key.'}]
+      end
+
+    end
+
+    context 'is an array' do
+
+      before do
+        class TestClass < BaseTestClass
+          validations do
+            allow_keys %w(one two)
+          end
+        end
+      end
+
+      it 'should validate an object' do
+        test = TestClass.new({'two' => :hello})
+        test.validates?.should == true
+      end
+
+      it 'should not validate an invalid object' do
+        test = TestClass.new({'one' => :hello, 'three' => :hello})
+        test.validates?.should == false
+        test.failures.should == [{'three' => 'is not a valid key.'}]
+      end
+
+    end
+  end
+
+end
 
