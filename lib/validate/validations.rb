@@ -19,7 +19,8 @@ module Validate
     #
     fails_because_key 'failed to match a custom validation.'
     def validates(obj, field, opts, validator)
-      true == obj[field].instance_exec(&opts[:with])
+      args = [obj, field].first(opts[:with].arity)
+      true == obj[field].instance_exec(*args, &opts[:with])
     end
 
     # Validates that a field exists.

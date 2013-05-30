@@ -248,10 +248,20 @@ describe Validate do
       test = TestClass.new(field: {test: :val})
       test.validates?.should == true
     end
-    
+
     it 'fails' do
       test = TestClass.new(field: {test: nil})
       test.validates?.should == false
+    end
+
+    it 'passes arguments' do
+      class TestClass < BaseTestClass
+        validations do
+          validates :field, with: ->(o,k) { o[k] == :val }
+        end
+      end
+      test = TestClass.new(field: :val)
+      test.validates?.should == true
     end
   end
 
