@@ -562,7 +562,6 @@ describe Validate do
       it 'should validate an object' do
         test = TestClass.new({'one' => :hello})
         test.validates?.should == true
-        p test.failures
       end
 
       it 'should not validate an invalid object' do

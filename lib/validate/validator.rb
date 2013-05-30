@@ -52,7 +52,7 @@ module Validate
         else
           @allow_keys
         end
-        @failures.push(*context_hash.keys.reject {|k| allow_keys.include?(k) }.map {|k| {k => 'is not a valid key.'} })
+        @failures.push(*(context_hash.keys - allow_keys).map {|k| {k => 'is not a valid key.'} })
       end
 
       @failures.count == 0
