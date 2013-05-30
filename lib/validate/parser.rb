@@ -26,13 +26,24 @@ module Validate
   end
 
 
+  # CompiledValidations is a struct that represents a set of compiled
+  # validations + options, eg. whether to allow extra keys.
+  #
+  class CompiledValidations < Struct.new(:validations, :allow_keys); end
+
+
   class BlockParsingContext
 
     def initialize
+      @allow_keys = :any
       @validations = []
     end
 
-    attr_reader :validations
+    # Returns a CompiledValidations struct.
+    #
+    def validations
+      CompiledValidations.new(@validations, @allow_keys)
+    end
 
     def method_missing(method, *args, &block)
       raise NoMethodError.new("No method #{method} to call in the context of a validation block.") unless method.to_s =~ /^validates/
@@ -51,12 +62,12 @@ module Validate
 
     # `when` is a special case, its syntax is as follows:
     #
-    #   when -> { ... } do
+    #   run_when -> { ... } do
     #     # validations go here
     #   end
     #
     def run_when(condition, &block)
-      validations = Parser.parse(&block)
+      validations = Parser.parse(&block).validations
       validations.map do |v|
         v[:opts] ||= {}
         v[:opts][:when] = condition
@@ -64,6 +75,19 @@ module Validate
       end
       @validations += validations
     end
+
+    # `allow_keys` is another special case, which can be used like this:
+    #
+    #   allow_keys :any
+    #   allow_keys :valid
+    #   allow_keys %w(one two three)
+    #
+    # Defaults to :any, if not specified.
+    #
+    def allow_keys(keys)
+      @allow_keys = keys
+    end
+
   end
 end
 

@@ -5,11 +5,16 @@ module Validate
   #
   class Validator
 
-    def initialize(validations)
-      @validations = validations
+    def initialize(compiled_validations)
+      @validations = compiled_validations.validations
+      @allow_keys = compiled_validations.allow_keys
     end
 
+    # TODO: this method could use some cleaning up...
+    #
     def validates?(context)
+      context_hash = context.to_hash
+
       @failures = @validations
         .map do |v|
           # destructure fields
@@ -32,14 +37,24 @@ module Validate
           validator = if v[:validations]
             Validator.new(v[:validations])
           end
-          success = ValidationMethods.new.send(v[:name], context.to_hash, v[:fields], v[:opts], validator)
+          success = ValidationMethods.new.send(v[:name], context_hash, v[:fields], v[:opts], validator)
           unless success
             reason = v[:reason].is_a?(Proc) ?
-              ValidationMethods::ArgumentFailureBlockScope.new(context.to_hash, v[:fields], v[:opts], validator).instance_exec(&v[:reason]) :
+              ValidationMethods::ArgumentFailureBlockScope.new(context_hash, v[:fields], v[:opts], validator).instance_exec(&v[:reason]) :
               v[:reason]
             {v[:fields] => reason}
           end
         end.select {|v| !v.nil? } # discard successes
+
+      if @allow_keys != :any
+        allow_keys = if @allow_keys == :valid 
+          @validations.map {|v| v[:fields]}.flatten
+        else
+          @allow_keys
+        end
+        context_hash.keys.select {|k| allow_keys.include?(k) }.map {|k| {k => 'is not a valid key.'} }
+      end
+
       @failures.count == 0
     end
 
