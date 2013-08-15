@@ -61,6 +61,15 @@ module Validate
       obj[field].is_a?(Numeric)
     end
 
+    # Validates that a field's value is a boolean.
+    #
+    #   validates_booleanness_of :field
+    #
+    fails_because_key 'was not a boolean value.'
+    def validates_booleanness_of(obj, field, opts, validator)
+      [true, false].include?(obj[field])
+    end
+
     # Validates the value, ensure equality.
     #
     #   validates_value_of :field, is: 'something'

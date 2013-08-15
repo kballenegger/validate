@@ -307,6 +307,27 @@ describe Validate do
     end
   end
 
+  context 'validates_booleanness_of' do
+
+    before do
+      class TestClass < BaseTestClass
+        validations do
+          validates_booleanness_of :field
+        end
+      end
+    end
+
+    it 'validates' do
+      test = TestClass.new(field: true)
+      test.validates?.should == true
+    end
+
+    it 'fails' do
+      test = TestClass.new(field: 'true')
+      test.validates?.should == false
+    end
+  end
+
   context 'validates_value_of' do
 
     before do
