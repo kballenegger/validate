@@ -43,6 +43,7 @@ module Store
       
       # simple ActiveRecord style validation
       validates_presence_of :name
+      validates_booleanness_of :safely
       
       # multiple keys can be included in one validation
       validates_type_of :description, :long_description, is: String
