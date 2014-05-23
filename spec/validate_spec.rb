@@ -451,7 +451,10 @@ describe Validate do
 
           validates_presence_of :secret
 
-          validates_inclusion_of :type, in: %w(paid free)
+          validates_inclusion_of :type, in: %w(paid free),
+            reason: 'reason1'
+          validates :type, with: -> { $block_executed = true; self != 'free' },
+            reason: 'reason2'
 
           # validate a block in the data structure that must evaluate to true
           validates :block, with: -> { self.call == true }
@@ -542,6 +545,35 @@ describe Validate do
       }
       test = TestClass.new(hash)
       test.validates?.should == false
+    end
+
+    it 'executes multiple validations for a single field' do
+      $block_executed = false
+      hash = @valid_hash.dup
+      hash[:type] = 'paid'
+      test = TestClass.new(hash)
+      test.validates?.should == true
+      $block_executed.should == true
+    end
+
+    it 'does not execute subsequent validations for a field that already failed' do
+      $block_executed = false
+      hash = @valid_hash.dup
+      hash[:type] = 'bogus'
+      test = TestClass.new(hash)
+      test.validates?.should == false
+      test.failures.should == [{type: 'reason1'}]
+      $block_executed.should == false
+    end
+
+    it 'fails the first invalid block when there are multiple validations for one field' do
+      $block_executed = false
+      hash = @valid_hash.dup
+      hash[:type] = 'free'
+      test = TestClass.new(hash)
+      test.validates?.should == false
+      test.failures.should == [{type: 'reason2'}]
+      $block_executed.should == true
     end
   end
 
